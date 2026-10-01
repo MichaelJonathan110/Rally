@@ -16,10 +16,10 @@ verification command has been run with raw output captured. **No stubs.**
 - [ ] CI workflow (lint + typecheck + tests)
 
 ## Phase 1 — Backend foundation
-- [ ] FastAPI app factory, settings, logging, error handling
-- [ ] SQLAlchemy 2.0 base + session, Alembic configured
+- [x] FastAPI app factory, settings, logging (error handling: partial)
+- [x] SQLAlchemy 2.0 base + session, Alembic configured (migration round-trips)
 - [ ] Docker Compose: postgres, redis, backend, frontend
-- [ ] Health/readiness endpoints (db + redis checks)
+- [~] Health endpoint with real DB check (redis check pending)
 - [ ] Auth: register/login, password hashing (passlib), JWT (python-jose), refresh
 - [ ] RBAC dependency + role model, server-enforced
 - [ ] `audit_logs` service and write path

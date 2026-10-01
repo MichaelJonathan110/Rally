@@ -1,32 +1,41 @@
 # STATUS.md — RALLY Build Status
 
-_Last updated: BATCH 0 (recon + scaffold + phase 0 docs)._
+_Last updated: BATCH 1 (verify Batch 0 + backend foundation)._
 
 ## What exists right now
 
-This is **Phase 0**: foundations only. No application runtime yet — no API
-server, no frontend app, no database, no Docker Compose, no tests. Those begin
-in Phase 1 (see `PROJECT.md`). Nothing here pretends to work that does not.
+Phase 1 backend foundation is **real and verified**: a FastAPI service under
+`apps/api` with layered structure, SQLAlchemy 2.0 models, an Alembic migration
+that round-trips against PostgreSQL, and passing tests. No frontend, no Docker
+Compose, no auth yet — those are later batches (see `PROJECT.md`).
 
-### Verified this batch
-- Git repository initialised on branch `main`.
-- `.gitignore` covering deps, builds, env, databases, OS files.
-- Top-level docs: `README.md`, `AGENTS.md`, `PROJECT.md`, `STATUS.md`.
-- `docs/PRODUCT_SPEC.md`, `docs/ARCHITECTURE.md`, `docs/DATABASE.md`,
-  `docs/DESIGN_SYSTEM.md`, `docs/PAGE_MAP.md`.
-- Brand config single source of truth:
-  - `apps/web/src/config/brand.ts` (Vite env, defaults BRAND_NAME=RALLY).
-  - `apps/api/app/core/brand.py` — **imports and runs**, emits public brand dict
-    (verified with `python -c ...`, raw output captured).
-- Monorepo skeleton: `apps/api`, `apps/web`, `packages/shared`, `infra`, `docs`
-  (each with `.gitkeep`); Python packages have `__init__.py`.
-- `.env.example` present (brand vars).
+### Verified this batch (raw output captured in the batch report)
+- FastAPI app factory (`app/main.py`), CORS, lifespan, `/health` +
+  `/api/v1/health` returning `{status,version,db}` with a **real DB probe**;
+  `/api/v1/brand` exposes the brand payload.
+- Settings via `pydantic-settings` (`app/core/config.py`): `DATABASE_URL`,
+  `REDIS_URL`, `SECRET_KEY`, `ACCESS_TOKEN_EXPIRE_MINUTES`, `BRAND_NAME`, CORS.
+- `app/db/base.py` (`Base` + UUID PK & timestamp mixins), `app/db/session.py`
+  (engine + `SessionLocal` + `get_db`, 3s connect timeout so health degrades
+  gracefully).
+- SQLAlchemy 2.0 typed models (12 tables): `users`, `profiles`, `activities`,
+  `activity_categories`, `activity_participants`, `venues`, `venue_courts`,
+  `clubs`, `club_members`, `bookings`, `payments`, `payment_splits`. UUID PKs,
+  `created_at`/`updated_at`, FKs with explicit `ondelete`, indexes, unique
+  constraints (incl. idempotency keys on bookings/payments).
+- Native PG enums store **lowercase values** (via `values_callable`) — verified
+  in the live DB.
+- Alembic wired to `Base.metadata` (offline + online); initial migration
+  `8eae275c9f82` applies, downgrades cleanly (drops enum types too) and
+  `alembic check` reports **no drift**.
+- `tests/` — 9 tests (health/brand/openapi contracts + model metadata) — pass.
+- `ruff check` clean; `mypy` (strict) clean on `app/`.
 
 ### Not yet implemented (tracked in PROJECT.md)
-- FastAPI app, SQLAlchemy models, Alembic migrations, auth/RBAC, services.
-- React app, routing, theming, PWA.
-- Docker Compose (postgres, redis, backend, frontend).
-- Tests (pytest/httpx, Vitest), lint/type-check config, CI.
+- Docker Compose (postgres/redis/backend/frontend).
+- Auth (register/login, JWT, refresh), RBAC dependency, audit_logs write path.
+- Redis health check, services/repositories, domain schemas beyond common.
+- React app, theming, PWA, CI workflow.
 
 ## Toolchain (recon, verbatim)
 ```
@@ -40,12 +49,14 @@ psql: command not found  (PostgreSQL client not on PATH)
 ```
 
 ## Known blockers / notes
-- `psql` is not installed on PATH. Postgres will be provided via Docker Compose
-  in Phase 1; a host client is not required.
-- Terminal sessions run bash (Git Bash), not PowerShell; PowerShell cmdlets are
-  invoked via `powershell.exe -Command` when needed.
+- Terminal sessions run **bash (Git Bash)**, not PowerShell; use `cmd.exe /c`
+  for Windows-native tools.
+- Host Postgres client not installed; DB verified via a throwaway
+  `postgres:16-alpine` Docker container (`-p 55432:5432`). No host client needed.
+- Benign warning: `starlette.testclient` emits a StarletteDeprecationWarning
+  about `httpx`/`httpx2`; tests pass regardless.
 
 ## Next batch
-Phase 1 — backend foundation: FastAPI app factory + settings, SQLAlchemy 2.0
-base/session, Alembic init, Docker Compose (postgres/redis/backend/frontend),
-health endpoints, and the first migrations.
+Phase 1 continued — Docker Compose (postgres/redis/backend/frontend), auth
+(register/login/JWT), RBAC dependency + role model, `audit_logs`, and the
+Redis readiness check.

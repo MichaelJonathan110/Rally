@@ -26,7 +26,7 @@ class Brand:
     theme: BrandTheme = field(default_factory=BrandTheme)
 
     @classmethod
-    def from_env(cls) -> "Brand":
+    def from_env(cls) -> Brand:
         def get(key: str, default: str) -> str:
             v = os.getenv(key)
             return v if v else default
