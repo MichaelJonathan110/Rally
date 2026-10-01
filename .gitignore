@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build output
+dist/
+build/
+*.egg-info/
+coverage/
+htmlcov/
+.vite/
+
+# Env and secrets
+.env
+.env.*
+!.env.example
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# OS and editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+
+# Docker
+infra/pgdata/
