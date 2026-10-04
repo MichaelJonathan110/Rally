@@ -1,0 +1,8 @@
+To: michaeledan11@gmail.com
+Subject: Verify your email
+
+Welcome to RALLY! Confirm your email address to activate your account.
+
+Verify email: http://localhost:4173/verify-email?token=krbxc0hVr5qe-6CnHen6yUzq9aDYSf1-bPXM2wwoGcQ
+
+If you didn't request this, you can safely ignore this email.

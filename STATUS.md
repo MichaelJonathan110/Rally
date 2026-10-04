@@ -1,62 +1,55 @@
 # STATUS.md — RALLY Build Status
 
-_Last updated: BATCH 1 (verify Batch 0 + backend foundation)._
+_Last updated: maintenance fire 2026-10-04 (schema-drift self-heal fix + hygiene)._
 
 ## What exists right now
 
-Phase 1 backend foundation is **real and verified**: a FastAPI service under
-`apps/api` with layered structure, SQLAlchemy 2.0 models, an Alembic migration
-that round-trips against PostgreSQL, and passing tests. No frontend, no Docker
-Compose, no auth yet — those are later batches (see `PROJECT.md`).
+RALLY is a working full-stack app: FastAPI backend (`apps/api`) + Vite/React/TS
+PWA (`apps/web`), running locally against SQLite for dev/e2e. Backend layering
+(router -> service -> repository -> model), server-enforced RBAC, config-driven
+activity engine, immutable MMR history and idempotent critical flows follow
+`AGENTS.md`. All figures below were produced by commands run this fire.
 
-### Verified this batch (raw output captured in the batch report)
-- FastAPI app factory (`app/main.py`), CORS, lifespan, `/health` +
-  `/api/v1/health` returning `{status,version,db}` with a **real DB probe**;
-  `/api/v1/brand` exposes the brand payload.
-- Settings via `pydantic-settings` (`app/core/config.py`): `DATABASE_URL`,
-  `REDIS_URL`, `SECRET_KEY`, `ACCESS_TOKEN_EXPIRE_MINUTES`, `BRAND_NAME`, CORS.
-- `app/db/base.py` (`Base` + UUID PK & timestamp mixins), `app/db/session.py`
-  (engine + `SessionLocal` + `get_db`, 3s connect timeout so health degrades
-  gracefully).
-- SQLAlchemy 2.0 typed models (12 tables): `users`, `profiles`, `activities`,
-  `activity_categories`, `activity_participants`, `venues`, `venue_courts`,
-  `clubs`, `club_members`, `bookings`, `payments`, `payment_splits`. UUID PKs,
-  `created_at`/`updated_at`, FKs with explicit `ondelete`, indexes, unique
-  constraints (incl. idempotency keys on bookings/payments).
-- Native PG enums store **lowercase values** (via `values_callable`) — verified
-  in the live DB.
-- Alembic wired to `Base.metadata` (offline + online); initial migration
-  `8eae275c9f82` applies, downgrades cleanly (drops enum types too) and
-  `alembic check` reports **no drift**.
-- `tests/` — 9 tests (health/brand/openapi contracts + model metadata) — pass.
-- `ruff check` clean; `mypy` (strict) clean on `app/`.
+### Verified this fire (raw output captured in the batch report)
+- **pytest: 264 passed, 1 warning** (`.venv/Scripts/python -m pytest -o addopts="" -q`).
+- **tsc --noEmit: PASS (exit 0)**; **vite build: PASS** (2106 modules, PWA
+  precache 76 entries / 693.97 KiB, `dist/sw.js`).
+- **Live API** on `127.0.0.1:8001`: `health=200`; **register=201**,
+  **login=200**; activities=419, venues=619, clubs=3.
+- **Web** on `127.0.0.1:4173`: `=200`; browser (puppeteer) pass over `/`,
+  `/discover`, `/login`, `/venues`, `/leaderboard` -> BAD_TEXT=NONE,
+  PAGE_ERRORS=NONE, FAILED_REQUESTS=NONE. Register-via-UI ends authed.
+- **Fixed:** register returned HTTP 500 — dev SQLite (`rally_dev.db`) had
+  drifted (missing `users.email_verified`). `scripts/serve_sqlite.py` now runs
+  `reconcile_schema()` after `create_all()` to add model columns missing from an
+  existing table, using constant defaults (SQL-function defaults such as
+  `gen_random_uuid()`/`now()` are not replayable in SQLite `ADD COLUMN`).
+- **Hardened:** the `reconcile_schema` self-heal had a latent bug — it replayed
+  SQL-function defaults and used `CURRENT_TIMESTAMP` for NOT NULL `DateTime`
+  columns, both of which SQLite's `ALTER TABLE ... ADD COLUMN` rejects
+  (`Cannot add a column with non-constant default`), so booting against a
+  stale DB could still crash. Now uses constant literals; covered by 3 new
+  regression tests (`tests/test_serve_sqlite_reconcile.py`).
+- **Restored:** tracked top-level `STATUS.md` (had been deleted by a runaway
+  `rm STATUS*.md` hygiene glob; it is not covered by `.gitignore`).
 
-### Not yet implemented (tracked in PROJECT.md)
-- Docker Compose (postgres/redis/backend/frontend).
-- Auth (register/login, JWT, refresh), RBAC dependency, audit_logs write path.
-- Redis health check, services/repositories, domain schemas beyond common.
-- React app, theming, PWA, CI workflow.
+### Surface (counts from the tree)
+- API route modules: 23 (`activities, admin, auth, bookings, catalog, chat,
+  checkin, clubs, follows, health, matches, matchmaking, media, notifications,
+  progress, reports, sports, tournaments, users, venue_map, venues, webhooks`).
+- Services: 18; SQLAlchemy models: users/profiles/activities/venues/bookings/
+  payments/clubs/chat/MMR/notifications/tournaments/reports ...
+- Web pages: 26 (`Home, Discover, CreateActivity, Login, Register, Profile,
+  Chat, Leaderboard, Tournaments, Clubs, Venues, VenueMap, Bookings,
+  Achievements, Matchmaking, People, Feed, ...`).
+- Alembic migrations: 4 (head `d3e4f5a6b7c8` email verification + tokens).
+- Backend tests: 23 modules.
+
+## Known gaps (tracked in PROJECT.md)
+- No Docker Compose for the full stack; dev runs on SQLite + local processes.
+- Frontend unit tests (Vitest) not yet written; `ruff check` has pre-existing
+  style debt (mostly `E501`); `mypy` not re-run this fire.
+- CI workflow still pending (Phase 0 item).
 
 ## Toolchain (recon, verbatim)
-```
-Python 3.11.16
-v24.21.0            (node)
-11.19.0             (npm)
-git version 2.54.0.windows.1
-Docker version 29.8.0, build 88096ef
-Docker Compose version v5.5.1
-psql: command not found  (PostgreSQL client not on PATH)
-```
-
-## Known blockers / notes
-- Terminal sessions run **bash (Git Bash)**, not PowerShell; use `cmd.exe /c`
-  for Windows-native tools.
-- Host Postgres client not installed; DB verified via a throwaway
-  `postgres:16-alpine` Docker container (`-p 55432:5432`). No host client needed.
-- Benign warning: `starlette.testclient` emits a StarletteDeprecationWarning
-  about `httpx`/`httpx2`; tests pass regardless.
-
-## Next batch
-Phase 1 continued — Docker Compose (postgres/redis/backend/frontend), auth
-(register/login/JWT), RBAC dependency + role model, `audit_logs`, and the
-Redis readiness check.
+- Python 3.11.16 - Node v24.21.0 - npm 11.19.0 - git 2.54.0.windows.1

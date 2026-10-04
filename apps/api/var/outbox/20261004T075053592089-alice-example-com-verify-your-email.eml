@@ -1,0 +1,31 @@
+From: RALLY <no-reply@rally.local>
+To: alice@example.com
+Subject: Verify your email
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="===============1584317773126757496=="
+
+--===============1584317773126757496==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+Welcome to RALLY! Confirm your email address to activate your account.
+
+Verify email: http://localhost:4173/verify-email?token=3Dmg_itdkj3al5RYgnQ33V=
+tHEPxR164imk7OS-nqi0Avo
+
+If you didn't request this, you can safely ignore this email.
+
+--===============1584317773126757496==
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+<p>Welcome to RALLY! Confirm your email address to activate your account.</p>=
+<p><a href=3D"http://localhost:4173/verify-email?token=3Dmg_itdkj3al5RYgnQ33V=
+tHEPxR164imk7OS-nqi0Avo">Verify email</a></p><p>Or paste this link into your =
+browser:<br><code>http://localhost:4173/verify-email?token=3Dmg_itdkj3al5RYgn=
+Q33VtHEPxR164imk7OS-nqi0Avo</code></p><p>If you didn't request this, you can =
+safely ignore this email.</p>
+
+--===============1584317773126757496==--

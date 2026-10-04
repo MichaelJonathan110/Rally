@@ -35,3 +35,16 @@ Thumbs.db
 
 # Docker
 infra/pgdata/
+*.pyc
+_*.html
+_report*.html
+_shot_*.png
+swap.py
+STATUS_*.md
+.tmpdata/
+apps/api/.e2e/
+logs/
+shots/
+openapi.json
+*.bak
+*.bak-*

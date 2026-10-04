@@ -23,18 +23,54 @@ from app.models import (  # noqa: F401  (import registers all tables)
 )
 
 EXPECTED_TABLES = {
+    # user
     "users",
     "profiles",
+    "user_skills",
+    "one_time_tokens",
+    # social graph
+    "follows",
+    # activity
     "activities",
     "activity_categories",
     "activity_participants",
+    "activity_recurrences",
+    # venue
     "venues",
     "venue_courts",
+    "venue_availability",
+    # club
     "clubs",
     "club_members",
+    "club_join_requests",
+    # booking
     "bookings",
     "payments",
     "payment_splits",
+    "refunds",
+    # match
+    "matches",
+    "match_participants",
+    "match_results",
+    "result_verifications",
+    # rating
+    "mmr_ratings",
+    "mmr_history",
+    "leaderboard_entries",
+    # tournament
+    "tournaments",
+    "tournament_entries",
+    "tournament_matches",
+    # social + moderation
+    "chat_rooms",
+    "chat_messages",
+    "check_ins",
+    "notifications",
+    "reviews",
+    "achievements",
+    "user_achievements",
+    "reports",
+    "moderation_actions",
 }
 
 

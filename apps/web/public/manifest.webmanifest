@@ -1,0 +1,17 @@
+{
+  "name": "RALLY - Temukan komunitasmu",
+  "short_name": "RALLY",
+  "description": "Temukan komunitasmu, olahraga bareng, dan naikkan MMR-mu di seluruh Indonesia.",
+  "lang": "id",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF6F0",
+  "theme_color": "#FAF6F0",
+  "icons": [
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

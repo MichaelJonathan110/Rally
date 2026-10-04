@@ -1,4 +1,4 @@
-"""Domain enumerations shared across models, schemas and services.
+﻿"""Domain enumerations shared across models, schemas and services.
 
 Stored as native PostgreSQL enums (SQLAlchemy ``Enum``). ``StrEnum`` keeps the
 members JSON/string-friendly while remaining real enums.
@@ -20,6 +20,23 @@ class UserRole(StrEnum):
     TOURNAMENT_ORGANIZER = "tournament_organizer"
     MODERATOR = "moderator"
     ADMIN = "admin"
+
+
+class SportCategory(StrEnum):
+    """Top-level sports grouping (config-driven sports catalog)."""
+
+    RACKET = "racket"
+    TEAM = "team"
+    COMBAT = "combat"
+    STRENGTH = "strength"
+    RUNNING = "running"
+    CYCLING = "cycling"
+    WATER = "water"
+    WINTER = "winter"
+    PRECISION = "precision"
+    GYMNASTICS = "gymnastics"
+    OUTDOOR = "outdoor"
+    OTHER = "other"
 
 
 class ActivityCategory(StrEnum):
@@ -59,6 +76,13 @@ class SkillLevel(StrEnum):
     ANY = "any"
 
 
+class RecurrenceFrequency(StrEnum):
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    BIWEEKLY = "biweekly"
+    MONTHLY = "monthly"
+
+
 class BookingStatus(StrEnum):
     PENDING = "pending"
     CONFIRMED = "confirmed"
@@ -81,6 +105,125 @@ class SplitStatus(StrEnum):
     PAID = "paid"
     WAIVED = "waived"
     REFUNDED = "refunded"
+
+
+class RefundStatus(StrEnum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    PROCESSED = "processed"
+    FAILED = "failed"
+
+
+class ClubJoinRequestStatus(StrEnum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    CANCELLED = "cancelled"
+
+
+class MatchStatus(StrEnum):
+    SCHEDULED = "scheduled"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
+    DISPUTED = "disputed"
+
+
+class MatchResultStatus(StrEnum):
+    PENDING = "pending"
+    SUBMITTED = "submitted"
+    CONFIRMED = "confirmed"
+    DISPUTED = "disputed"
+    VERIFIED = "verified"
+    REJECTED = "rejected"
+
+
+class TournamentFormat(StrEnum):
+    SINGLE_ELIMINATION = "single_elimination"
+    DOUBLE_ELIMINATION = "double_elimination"
+    ROUND_ROBIN = "round_robin"
+    SWISS = "swiss"
+
+
+class TournamentStatus(StrEnum):
+    DRAFT = "draft"
+    OPEN = "open"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    CANCELLED = "cancelled"
+
+
+class ChatRoomType(StrEnum):
+    DIRECT = "direct"
+    GROUP = "group"
+    ACTIVITY = "activity"
+    CLUB = "club"
+    TOURNAMENT = "tournament"
+
+
+class MessageType(StrEnum):
+    TEXT = "text"
+    IMAGE = "image"
+    FILE = "file"
+    SYSTEM = "system"
+
+
+class NotificationType(StrEnum):
+    ACTIVITY_INVITE = "activity_invite"
+    JOIN_REQUEST = "join_request"
+    BOOKING = "booking"
+    PAYMENT = "payment"
+    MATCH_RESULT = "match_result"
+    MMR_UPDATE = "mmr_update"
+    ACHIEVEMENT = "achievement"
+    MODERATION = "moderation"
+    SYSTEM = "system"
+
+
+class ReviewTargetType(StrEnum):
+    USER = "user"
+    VENUE = "venue"
+    ACTIVITY = "activity"
+    CLUB = "club"
+
+
+class ReportTargetType(StrEnum):
+    USER = "user"
+    ACTIVITY = "activity"
+    MESSAGE = "message"
+    REVIEW = "review"
+    CLUB = "club"
+    VENUE = "venue"
+
+
+class ReportStatus(StrEnum):
+    OPEN = "open"
+    REVIEWING = "reviewing"
+    RESOLVED = "resolved"
+    DISMISSED = "dismissed"
+
+
+class ModerationActionType(StrEnum):
+    WARN = "warn"
+    MUTE = "mute"
+    SUSPEND = "suspend"
+    BAN = "ban"
+    REMOVE_CONTENT = "remove_content"
+    RESTORE_CONTENT = "restore_content"
+    DISMISS_REPORT = "dismiss_report"
+
+
+class AuditAction(StrEnum):
+    CREATE = "create"
+    UPDATE = "update"
+    DELETE = "delete"
+    LOGIN = "login"
+    LOGOUT = "logout"
+    MMR_UPDATE = "mmr_update"
+    BOOKING = "booking"
+    PAYMENT = "payment"
+    MODERATION = "moderation"
 
 
 def pg_enum(enum_cls: type[StrEnum], name: str) -> Enum:

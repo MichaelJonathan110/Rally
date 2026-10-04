@@ -1,0 +1,8 @@
+To: owner@example.com
+Subject: Verify your email
+
+Welcome to RALLY! Confirm your email address to activate your account.
+
+Verify email: http://localhost:4173/verify-email?token=DmYwbqH3WZ-L2fjSu38q6AaODvTBDI6rmiylw3fdmks
+
+If you didn't request this, you can safely ignore this email.
